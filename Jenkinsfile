@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        bat "docker push %DOCKER_IMAGE%:latest"
+                        bat "docker push mahauser06/demo-app:latest"
                     }
                 }
             }
