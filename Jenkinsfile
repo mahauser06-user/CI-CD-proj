@@ -20,7 +20,7 @@ pipeline {
             steps {
                 // Example: run Maven tests
                 // Adjust this according to your project (Maven/Gradle/other)
-                sh 'mvn clean test'
+                bat 'mvn clean test'
             }
         }
 
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONARQUBE_SERVER}") {
                     // Run SonarQube scan
-                    sh 'mvn sonar:sonar'
+                    bat 'mvn sonar:sonar'
                 }
             }
         }
@@ -36,7 +36,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE}:latest ."
+                    bat "docker build -t ${DOCKER_IMAGE}:latest ."
                 }
             }
         }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        sh "docker push ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 // Example: simple deployment command
                 // Replace with your deployment logic (Kubernetes, SSH, etc.)
-                sh 'echo "Deploying application..."'
+                bat 'echo "Deploying application..."'
             }
         }
     }
