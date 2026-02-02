@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS = 'dockerhub-creds'
-        DOCKER_IMAGE = 'mahauser06/demo-app'
+        DOCKER_IMAGE = 'maha006/demo-app'
     }
 
     stages {
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        bat "docker push mahauser06/demo-app:latest"
+                        bat "docker push maha006/demo-app:latest"
                     }
                 }
             }
