@@ -32,8 +32,8 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner'
-                    withSonarQubeEnv('SonarQube') {
-                        bat "${scannerHome}\\bin\\sonar-scanner -Dsonar.projectKey=CI-CD-proj -Dsonar.sources=."
+                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                          bat "${scannerHome}\\bin\\sonar-scanner -Dsonar.projectKey=CI-CD-proj -Dsonar.sources=. -Dsonar.login=%SONAR_TOKEN%"
                     }
                 }
             }
