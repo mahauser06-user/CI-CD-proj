@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/mahauser06-user/CI-CD-proj.git', branch: 'main', credentialsId: 'github-creds'
@@ -26,17 +27,23 @@ pipeline {
             }
         }
 
-        // ✅ SONARQUBE STAGE ADDED HERE
+        // ✅ FIXED SONARQUBE STAGE
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat """
-                    sonar-scanner ^
-                    -Dsonar.projectKey=CI-CD-proj ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.login=YOUR_TOKEN
-                    """
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        bat "${scannerHome}\\bin\\sonar-scanner -Dsonar.projectKey=CI-CD-proj -Dsonar.sources=."
+                    }
+                }
+            }
+        }
+
+        // ✅ QUALITY GATE (Assignment requirement)
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -51,7 +58,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
-                        bat "docker push maha006/demo-app:latest"
+                        bat "docker push %DOCKER_IMAGE%:latest"
                     }
                 }
             }
