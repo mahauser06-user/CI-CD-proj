@@ -10,7 +10,9 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/mahauser06-user/CI-CD-proj.git', branch: 'main', credentialsId: 'github-creds'
+                git url: 'https://github.com/mahauser06-user/CI-CD-proj.git',
+                    branch: 'main',
+                    credentialsId: 'github-creds'
             }
         }
 
@@ -33,15 +35,11 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarScanner'
                     withSonarQubeEnv('SonarQube') {
-                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                            bat """
-                            ${scannerHome}\\bin\\sonar-scanner ^
-                            -Dsonar.projectKey=CI-CD-proj ^
-                            -Dsonar.sources=. ^
-                            -Dsonar.host.url=http://localhost:9000 ^
-                            -Dsonar.token=%SONAR_TOKEN%
-                            """
-                        }
+                        bat """
+                        ${scannerHome}\\bin\\sonar-scanner ^
+                        -Dsonar.projectKey=CI-CD-proj ^
+                        -Dsonar.sources=.
+                        """
                     }
                 }
             }
@@ -65,7 +63,10 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS}") {
+                    docker.withRegistry(
+                        'https://index.docker.io/v1/',
+                        "${DOCKER_CREDENTIALS}"
+                    ) {
                         bat "docker push %DOCKER_IMAGE%:latest"
                     }
                 }
