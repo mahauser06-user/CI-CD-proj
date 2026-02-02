@@ -32,14 +32,22 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
                         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                          bat "${scannerHome}\\bin\\sonar-scanner -Dsonar.projectKey=CI-CD-proj -Dsonar.sources=. -Dsonar.login=%SONAR_TOKEN%"
+                            bat """
+                            ${scannerHome}\\bin\\sonar-scanner ^
+                            -Dsonar.projectKey=CI-CD-proj ^
+                            -Dsonar.sources=. ^
+                            -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.token=%SONAR_TOKEN%
+                            """
+                        }
                     }
                 }
             }
         }
 
-        // ✅ QUALITY GATE (Assignment requirement)
+        // ✅ QUALITY GATE
         stage("Quality Gate") {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
