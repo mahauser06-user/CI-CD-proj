@@ -15,7 +15,6 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Install Python dependencies
                 bat 'python -m pip install --upgrade pip'
                 bat 'pip install -r requirements.txt'
             }
@@ -23,8 +22,22 @@ pipeline {
 
         stage('Test') {
             steps {
-                // Run tests using pytest (or you can use unittest)
                 bat 'pytest test_app.py'
+            }
+        }
+
+        // ✅ SONARQUBE STAGE ADDED HERE
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat """
+                    sonar-scanner ^
+                    -Dsonar.projectKey=CI-CD-proj ^
+                    -Dsonar.sources=. ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.login=YOUR_TOKEN
+                    """
+                }
             }
         }
 
